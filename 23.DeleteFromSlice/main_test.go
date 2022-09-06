@@ -7,21 +7,22 @@ import (
 
 type TestCase struct {
 	Name     string
-	str      string
-	expected string
+	sl       []any
+	i        int
+	expected []any
 }
 
-func TestReverseString(t *testing.T) {
+func TestDeleteFromSlice(t *testing.T) {
 	testCases := []TestCase{
-		{Name: "case with snow dog sun", str: "snow dog sun", expected: "sun dog snow"},
-		{Name: "case with Test Not If", str: "Test Not If", expected: "If Not Test"},
+		{Name: "case with strings", sl: []any{"test1", "test2", "test3"}, i: 2, expected: []any{"test1", "test2"}},
+		{Name: "case with ints", sl: []any{0, 1, 2, 3, 4, 5}, i: 3, expected: []any{0, 1, 2, 4, 5}},
 	}
 
 	for _, cse := range testCases {
 		cse := cse
 		t.Run(cse.Name, func(t *testing.T) {
-			result := reverseString(cse.str)
-			assert.Equalf(t, cse.expected, result, "for %s expected %s, got %s", cse.str, cse.expected, result)
+			result := deleteFromSlice(cse.sl, cse.i)
+			assert.Equalf(t, cse.expected, result, "for %s and %v expected %s, got %s", cse.sl, cse.i, cse.expected, result)
 		})
 	}
 }
