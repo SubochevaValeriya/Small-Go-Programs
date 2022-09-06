@@ -1,1 +1,5 @@
-package ___Inheritance
+package main
+
+func main() {
+
+}
