@@ -19,15 +19,6 @@ func main() {
 	fmt.Println(sum)
 }
 
-func consecutive(numbers []int) int {
-	sum := 0
-	for _, number := range numbers {
-		sum += squareCalc(number)
-	}
-
-	return sum
-}
-
 func sumOfSquares(numbers []int, c chan int) int {
 	var sum int
 	wg := new(sync.WaitGroup) //waitGroup - we need to wait for all goroutines to complete
@@ -44,6 +35,15 @@ func sumOfSquares(numbers []int, c chan int) int {
 	}
 	wg.Wait()
 	c <- sum
+	return sum
+}
+
+func consecutive(numbers []int) int {
+	sum := 0
+	for _, number := range numbers {
+		sum += squareCalc(number)
+	}
+
 	return sum
 }
 

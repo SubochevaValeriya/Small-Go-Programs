@@ -5,10 +5,11 @@ package main
 var justString string
 
 func main() {
-	someFunc()
+	sl := []int{}
+	quickSort()
 }
 
-func someFunc() {
+func quickSort([]int) {
 	v := createHugeString(1 << 10)
 	justString = v[:100]
 }
