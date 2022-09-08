@@ -30,17 +30,16 @@ func consecutive(numbers []int) int {
 
 func sumOfSquares(numbers []int, c chan int) int {
 	var sum int
-	//var workers = make(chan struct{}, 1) //pool of workers
 	wg := new(sync.WaitGroup) //waitGroup - we need to wait for all goroutines to complete
-	//defer close(workers)
+	mu := new(sync.Mutex)
 	for _, number := range numbers {
-		//	workers <- struct{}{} //
 		wg.Add(1) //one goroutine start to work
 		go func(number int) {
 			defer wg.Done() //one goroutine finished its work
 			number = squareCalc(number)
+			mu.Lock()
+			defer mu.Unlock()
 			sum += number //critical section - shared resource
-			//			<-workers     //
 		}(number)
 	}
 	wg.Wait()
