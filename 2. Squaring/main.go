@@ -1,1 +1,1 @@
-package ___Inheritance
+package main
