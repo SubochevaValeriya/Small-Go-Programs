@@ -7,9 +7,56 @@ import (
 
 // 9.	Разработать конвейер чисел. Даны два канала: в первый пишутся числа (x) из массива, во второй — результат операции x*2, после чего данные из второго канала должны выводиться в stdout.
 
+var dataResultForTest []int
+
+func main() {
+	generator := func(done <-chan any, integers []int) <-chan int {
+		intStream := make(chan int)
+		go func() {
+			defer close(intStream)
+			for _, i := range integers {
+				select {
+				case <-done:
+					return
+				case intStream <- i:
+				}
+			}
+		}()
+		return intStream
+	}
+
+	multiply := func(
+		done <-chan interface{},
+		intStream <-chan int,
+		multiplier int,
+	) <-chan int {
+		multipliedStream := make(chan int)
+		go func() {
+			defer close(multipliedStream)
+			for i := range intStream {
+				select {
+				case <-done:
+					return
+				case multipliedStream <- i * multiplier:
+				}
+			}
+		}()
+		return multipliedStream
+	}
+
+	done := make(chan interface{})
+	defer close(done)
+
+	intStream := generator(done, 1, 2, 3, 4)
+	pipeline := multiply(done, add(done, multiply(done, intStream, 2), 1), 2)
+
+	for v := range pipeline {
+		fmt.Println(v)
+	}
+}
+
 func main() {
 	data := []int{1, 4, 3}
-	var dataResultForTest []int
 	chIn := make(chan int, len(data))
 	chOut := make(chan int, len(data))
 	wg := sync.WaitGroup{}
@@ -17,7 +64,7 @@ func main() {
 	wg.Add(len(data))
 	go readFromSlice(data, chIn)
 	go multiplicate(chIn, chOut)
-	go toOutput(chOut, &wg, dataResultForTest)
+	go toOutput(chOut, &wg)
 
 	fmt.Println(dataResultForTest)
 
@@ -26,10 +73,12 @@ func main() {
 
 // Read data from slice
 func readFromSlice(data []int, ch chan int) {
+
 	defer close(ch)
 	for _, elem := range data {
 		ch <- elem
 	}
+
 }
 
 // Read from first slice to second and do operation x*2
@@ -46,7 +95,7 @@ func toOutput(ch chan int, wg *sync.WaitGroup) {
 	for elem := range ch {
 		fmt.Println(elem)
 		mu.Lock()
-		dataResultForTest := append(dataResultForTest, elem)
+		dataResultForTest = append(dataResultForTest, elem)
 		fmt.Println(dataResultForTest)
 		mu.Unlock()
 		wg.Done()
