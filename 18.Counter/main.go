@@ -29,7 +29,7 @@ func (c *Counter) count(n int) {
 	for i := 0; i < n; i++ {
 		c.mu.Lock()
 		c.counter++
-		fmt.Println("I count to", c.counter)
+		fmt.Println("I'm counting:", c.counter)
 		c.mu.Unlock()
 	}
 	fmt.Println("Result:", c.counter)
