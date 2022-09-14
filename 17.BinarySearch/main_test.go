@@ -1,27 +1,33 @@
 package main
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 type TestCase struct {
-	Name     string
-	sl       []int
-	expected []int
+	Name          string
+	data          []int
+	searchElement int
+	expected      int
+	expectedError error
 }
 
 func TestGrouping(t *testing.T) {
 	testCases := []TestCase{
-		{Name: "case [11, 1, -2, 213, -20, 9]", sl: []int{11, 1, -2, 213, -20, 9}, expected: []int{-20, -2, 1, 9, 11, 213}},
-		{Name: "case [747747, -1, 2, -1, 4, 0, -1, 2, 2,4, 1, -5]", sl: []int{747747, -1, 2, -1, 4, 0, -1, 2, 2, 4, 1, -5}, expected: []int{-5, -1, -1, -1, 0, 1, 2, 2, 2, 4, 4, 747747}},
+		{Name: "case [1, 2, 3, 11, 35, 55]", data: []int{1, 2, 3, 11, 35, 55}, searchElement: 11, expected: 3, expectedError: nil},
+		{Name: "case [1, 2, 3, 11, 35, 55]", data: []int{1, 2, 3, 11, 35, 55}, searchElement: 4, expected: 0, expectedError: errors.New("not found")},
 	}
 
 	for _, cse := range testCases {
 		cse := cse
 		t.Run(cse.Name, func(t *testing.T) {
-			result := quickSort(cse.sl)
-			assert.Equalf(t, cse.expected, result, "for %d expected %t, got %t", cse.sl, cse.expected, result)
+			result, err := binarySerch(cse.data, cse.searchElement)
+			assert.Equalf(t, cse.expected, result, "for %d & %d expected %t, got %t", cse.data, cse.searchElement, cse.expected, result)
+			if cse.expectedError != nil {
+				assert.Error(t, cse.expectedError, err, "for %d & %d expected %t, got %t", cse.data, cse.searchElement, cse.expected, result)
+			}
 		})
 	}
 }
