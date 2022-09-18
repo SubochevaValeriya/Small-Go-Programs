@@ -5,3 +5,5 @@ package main
 func main() {
 
 }
+
+// https://www.sobyte.net/post/2021-06/several-ways-to-stop-goroutine-in-golang/
